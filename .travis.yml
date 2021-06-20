@@ -1,0 +1,22 @@
+sudo: required
+services:
+ - docker
+
+before_install:
+  - docker build -t hbaj/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true hbaj/react-test npm test -- --coverage
+
+after_success:
+  - docker build -t hbaj/multi-client ./client
+  - docker build -t hbaj/multi-nginx ./nginx
+  - docker build -t hbaj/multi-server ./server
+  - docker build -t hbaj/multi-worker ./worker
+  # log in to the docker cli via travis
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push hbaj/multi-client
+  - docker push hbaj/multi-nginx
+  - docker push hbaj/multi-server
+  - docker push hbaj/multi-worker
+  # take those images and push them to docker hub

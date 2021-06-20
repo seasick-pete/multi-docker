@@ -58,3 +58,18 @@ The default.conf should now look like this:
       }
     }
     
+
+
+```
+Fix for Failing Travis Builds
+
+In the upcoming lecture, we will be adding a script to our .travis.yml file. Due to a change in how the Jest library works with Create React App, we need to make a small modification:
+
+    script:
+      - docker run USERNAME/react-test npm test -- --coverage
+
+instead should be:
+
+    script:
+      - docker run -e CI=true USERNAME/react-test npm test
+      
